@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .result-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+        .result-card h2 {
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+        .result-image {
+            max-width: 100%;
+            margin-top: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .result-image-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+        .result-image-container div {
+            flex: 0 0 45%;
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .result-image-container h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <h1>Results</h1>
+
+    {% if translation %}
+        <div class="result-card">
+            <h2>Translation:</h2>
+            <p>{{ translation }}</p>
+        </div>
+    {% endif %}
+
+    {% if image_path %}
+        <div class="result-card">
+            <h2>Text-to-Image Generation:</h2>
+            <img src="{{ image_path }}" alt="Generated Image" class="result-image">
+        </div>
+    {% endif %}
+
+    {% if input_image and output_image %}
+        <div class="result-card">
+            <h2>Image-to-Image Generation:</h2>
+            <div class="result-image-container">
+                <div>
+                    <h3>Input Image:</h3>
+                    <img src="{{ input_image }}" alt="Input Image" class="result-image">
+                </div>
+                <div>
+                    <h3>Output Image:</h3>
+                    <img src="{{ output_image }}" alt="Output Image" class="result-image">
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+</body>
+</html>

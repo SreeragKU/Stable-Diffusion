@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CogniSynth</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            z-index: 1000; /* Ensure it appears above other content */
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+         .imagecontainer {
+            margin: auto;
+            padding: 0;
+        }
+        .images {
+            margin-top: 120px; /* Adjust margin-top as needed */
+        }
+
+        .card-img-top {
+            border-radius: 10px;
+            object-fit: cover;
+            width: 100%;
+            height: auto; /* Maintain aspect ratio */
+        }
+        .card {
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+        .card-body .card-img-top {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        h1, h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="text"], input[type="number"], input[type="file"], button {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        .hidden {
+            display: none;
+        }
+        .coin {
+            display: inline-block;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            line-height: 150px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        .coin:hover {
+            background-color: #555;
+        }
+        .sidebar {
+            height: 100%;
+            width: 250px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background-color: #333;
+            padding-top: 20px;
+            margin-top: 67px;
+            transition: margin-left 0.5s; /* Add transition for smoother animation */
+        }
+        .sidebar h1 {
+            color: #fff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .main-content {
+            padding: 20px;
+        }
+
+        /* Media Queries for responsiveness */
+        @media only screen and (max-width: 768px) {
+            .sidebar {
+                margin-left: -250px; /* Hide sidebar by default on smaller screens */
+            }
+            .sidebar.show {
+                margin-left: 0; /* Show sidebar when toggled */
+            }
+            .sidebar h1 {
+                display: none; /* Hide sidebar title on smaller screens */
+            }
+            .main-content {
+                padding-left: 20px; /* Adjust main content padding to make space for collapsed sidebar */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>CogniSynth</h1>
+    </header>
+    <div class="sidebar" id="sidebar">
+        <div class="card">
+            <div class="text-center">
+                <div class="coin" onclick="window.location.href='/'">Home</div>
+                <div class="coin" onclick="showTranslationFields()">Translate</div>
+                <div class="coin" onclick="showTextToImageFields()">Text-to-Image</div>
+                <div class="coin" onclick="showImageToImageFields()">Image-to-Image</div>
+                <div class="coin" onclick="showTextAndImageFields()">Combined</div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+
+        <div id="translate_fields" class="card hidden" style="margin-top:120px;">
+            <h2>English-to-Malayalam Translation</h2>
+            <form action="/process_request" method="POST">
+                <input type="hidden" name="selected_option" value="translation">
+                <label for="eng_sentence">English Sentence:</label><br>
+                <input type="text" id="eng_sentence" name="eng_sentence"><br>
+                <button type="submit">Translate</button>
+            </form>
+        </div>
+
+        <div id="text_to_image_fields" class="card hidden" style="margin-top:120px;">
+            <h2>Text-to-Image</h2>
+            <form action="/process_request" method="POST">
+                <input type="hidden" name="selected_option" value="text_to_image">
+                <label for="text_prompt">Text Prompt:</label><br>
+                <input type="text" id="text_prompt" name="text_prompt"><br>
+                <button type="submit">Generate Image</button>
+            </form>
+        </div>
+
+        <div id="image_to_image_fields" class="card hidden" style="margin-top:120px;">
+            <h2>Image-to-Image</h2>
+            <form action="/process_request" method="POST" enctype="multipart/form-data">
+                <input type="hidden" name="selected_option" value="image_to_image">
+                <label for="image_file">Select Image:</label><br>
+                <input type="file" id="image_file" name="image_file"><br>
+                <label for="strength">Strength:</label><br>
+                <input type="number" id="strength" name="strength" step="0.1" min="0" max="1" value="0.5"><br>
+                <button type="submit">Generate Image</button>
+            </form>
+        </div>
+
+        <div id="text_and_image_fields" class="card hidden" style="margin-top:120px;">
+            <h2>Text-to-Image & Image-to-Image</h2>
+            <form action="/process_request" method="POST">
+                <input type="hidden" name="selected_option" value="text_to_image_image_to_image">
+                <label for="text_prompt">Text Prompt:</label><br>
+                <input type="text" id="text_image_prompt" name="text_prompt"><br>
+                <button type="submit">Generate Images</button>
+            </form>
+        </div>
+
+<!-- Images -->
+<div class="imagecontainer">
+    <div class="images">
+        <!-- First row -->
+        <div class="row" style="margin-top: 120px;">
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Text to Image:</h5>
+                        <label>"A dog with sunglasses, wearing comfy hat, looking at camera, highly detailed, ultra sharp, cinematic, 100 mm lens, 8k resolution"</label>
+                        <img src="{{ url_for('static', filename='images/image3.jpg') }}" class="card-img-top" alt="Image 3" style="width: 100%; height: 250px; object-fit: cover; border-radius: 10px;">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Image to Image (Input):</h5>
+                        <img src="{{ url_for('static', filename='images/image5.jpg') }}" class="card-img-top" alt="Image 5" style="width: 100%; height: 250px; object-fit: cover; border-radius: 10px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Second row -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Image to Image (Output):</h5>
+                        <img src="{{ url_for('static', filename='images/image4.jpg') }}" class="card-img-top" alt="Image 4" style="width: 100%; height: 250px; object-fit: cover; border-radius: 10px;">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 mb-4">
+                <div class="card" style="width:550px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Combined Results:</h5>
+                        <img src="{{ url_for('static', filename='images/image1.png') }}" class="card-img-top" alt="Image 2" style="width: 500px; height: 250px; object-fit: cover; border-radius: 10px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Third row -->
+        <div class="row">
+            <div class="col-lg-6 mb-4">
+                <div class="card" style="width:550px;">
+                    <div class="card-body">
+                        <h5 class="card-title">Combined Results:</h5>
+                        <img src="{{ url_for('static', filename='images/image2.png') }}" class="card-img-top" alt="Image 3" style="width: 500px; height: 250px; object-fit: cover; border-radius: 10px;">
+                    </div>
+                </div>
+            </div>
+            <!-- Add the second card here if you have another set -->
+        </div>
+    </div>
+</div>
+
+    </div>
+
+
+
+    <script>
+
+    function showTranslationFields() {
+        document.getElementById("translate_fields").classList.remove("hidden");
+        document.getElementById("text_to_image_fields").classList.add("hidden");
+        document.getElementById("image_to_image_fields").classList.add("hidden");
+        document.getElementById("text_and_image_fields").classList.add("hidden");
+        document.querySelector('.images').classList.add("hidden");
+    }
+
+    function showTextToImageFields() {
+        document.getElementById("translate_fields").classList.add("hidden");
+        document.getElementById("text_to_image_fields").classList.remove("hidden");
+        document.getElementById("image_to_image_fields").classList.add("hidden");
+        document.getElementById("text_and_image_fields").classList.add("hidden");
+        document.querySelector('.images').classList.add("hidden");
+    }
+
+    function showImageToImageFields() {
+        document.getElementById("translate_fields").classList.add("hidden");
+        document.getElementById("text_to_image_fields").classList.add("hidden");
+        document.getElementById("image_to_image_fields").classList.remove("hidden");
+        document.getElementById("text_and_image_fields").classList.add("hidden");
+        document.querySelector('.images').classList.add("hidden");
+    }
+
+    function showTextAndImageFields() {
+        document.getElementById("translate_fields").classList.add("hidden");
+        document.getElementById("text_to_image_fields").classList.add("hidden");
+        document.getElementById("image_to_image_fields").classList.add("hidden");
+        document.getElementById("text_and_image_fields").classList.remove("hidden");
+        document.querySelector('.images').classList.add("hidden");
+    }
+</script>
+
+
+</body>
+</html>
